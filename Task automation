@@ -1,0 +1,24 @@
+import re
+
+input_file = input("Enter path of text file: ").strip()
+output_file = "extracted_emails.txt"
+
+try:
+    with open(input_file, "r") as f:
+        content = f.read()
+
+    pattern = r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9.]+"
+    emails = list(set(re.findall(pattern, content)))
+
+    if not emails:
+        print("No emails found.")
+    else:
+        with open(output_file, "w") as f:
+            for email in emails:
+                f.write(email + "\n")
+        print(f"Found {len(emails)} email(s). Saved to '{output_file}'")
+        for e in emails:
+            print(" -", e)
+
+except FileNotFoundError:
+    print("File not found. Check the path.")
