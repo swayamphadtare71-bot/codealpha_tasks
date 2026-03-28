@@ -1,0 +1,95 @@
+import csv
+import os
+
+prices = {
+    "AAPL": 180,
+    "TSLA": 250,
+    "GOOGL": 140,
+    "AMZN": 185,
+    "MSFT": 420,
+    "NFLX": 600,
+    "META": 510
+}
+
+def show_available():
+    print("\nAvailable Stocks:")
+    print(f"{'Stock':<10} {'Price (USD)'}")
+    print("-" * 25)
+    for stock, price in prices.items():
+        print(f"{stock:<10} ${price}")
+    print()
+
+def get_portfolio():
+    portfolio = {}
+    print("Enter stock name and quantity (type 'done' to finish)\n")
+
+    while True:
+        stock = input("Stock name: ").upper()
+        if stock == "DONE":
+            break
+        if stock not in prices:
+            print("Stock not found. Check available list.")
+            continue
+        try:
+            qty = int(input(f"Quantity of {stock}: "))
+            if qty <= 0:
+                print("Enter a positive number.")
+                continue
+            portfolio[stock] = portfolio.get(stock, 0) + qty
+        except ValueError:
+            print("Enter a valid number.")
+
+    return portfolio
+
+def show_summary(portfolio):
+    if not portfolio:
+        print("No stocks added.")
+        return
+
+    total = 0
+    print("\n--- Portfolio Summary ---")
+    print(f"{'Stock':<10} {'Qty':<8} {'Price':<10} {'Value'}")
+    print("-" * 40)
+
+    for stock, qty in portfolio.items():
+        value = prices[stock] * qty
+        total += value
+        print(f"{stock:<10} {qty:<8} ${prices[stock]:<10} ${value}")
+
+    print("-" * 40)
+    print(f"{'Total Investment':<28} ${total}")
+    return total
+
+def save_result(portfolio, total):
+    choice = input("\nSave result? (txt / csv / no): ").lower()
+
+    if choice == "txt":
+        with open("portfolio.txt", "w") as f:
+            f.write("Portfolio Summary\n")
+            f.write("-" * 35 + "\n")
+            for stock, qty in portfolio.items():
+                value = prices[stock] * qty
+                f.write(f"{stock} | Qty: {qty} | Price: ${prices[stock]} | Value: ${value}\n")
+            f.write("-" * 35 + "\n")
+            f.write(f"Total Investment: ${total}\n")
+        print("Saved as portfolio.txt")
+
+    elif choice == "csv":
+        with open("portfolio.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Stock", "Quantity", "Price", "Total Value"])
+            for stock, qty in portfolio.items():
+                value = prices[stock] * qty
+                writer.writerow([stock, qty, prices[stock], value])
+            writer.writerow(["", "", "Total", total])
+        print("Saved as portfolio.csv")
+
+def main():
+    print("=== Stock Portfolio Tracker ===")
+    show_available()
+    portfolio = get_portfolio()
+    total = show_summary(portfolio)
+    if total:
+        save_result(portfolio, total)
+
+main()
