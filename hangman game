@@ -1,0 +1,56 @@
+import random
+
+words = ["python", "guitar", "mango", "rocket", "bridge"]
+
+def play():
+    word = random.choice(words)
+    guessed = []
+    wrong = 0
+    max_wrong = 6
+
+    print("\n--- HANGMAN ---")
+    print(f"Word has {len(word)} letters\n")
+
+    while wrong < max_wrong:
+        display = ""
+        for ch in word:
+            if ch in guessed:
+                display += ch + " "
+            else:
+                display += "_ "
+
+        print("Word:", display)
+        print(f"Wrong guesses left: {max_wrong - wrong}")
+        print("Guessed so far:", guessed)
+
+        if "_" not in display:
+            print("\nYou got it! The word was:", word)
+            break
+
+        guess = input("Enter a letter: ").lower()
+
+        if len(guess) != 1 or not guess.isalpha():
+            print("Enter a single letter only.")
+            continue
+
+        if guess in guessed:
+            print("Already tried that one.")
+            continue
+
+        guessed.append(guess)
+
+        if guess in word:
+            print("Correct!\n")
+        else:
+            wrong += 1
+            print(f"Wrong! ({wrong}/{max_wrong})\n")
+    else:
+        print("\nGame over! The word was:", word)
+
+    again = input("\nPlay again? (y/n): ").lower()
+    if again == "y":
+        play()
+    else:
+        print("Thanks for playing!")
+
+play()
